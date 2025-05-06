@@ -1,22 +1,20 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
--- https://www.phpmyadmin.net/
+-- version 4.1.4
+-- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 06, 2025 alle 09:30
--- Versione del server: 5.7.17
--- Versione PHP: 5.6.30
+-- Generation Time: Mag 06, 2025 alle 10:52
+-- Versione del server: 5.6.15-log
+-- PHP Version: 5.5.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `zvolta`
@@ -25,29 +23,19 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `parcheggio`
---
-
-CREATE TABLE `parcheggio` (
-  `Posto` int(11) NOT NULL,
-  `Stato` varchar(50) NOT NULL,
-  `ID_prenotazione` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Struttura della tabella `prenotazione`
 --
 
-CREATE TABLE `prenotazione` (
-  `ID_prenotazione` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `prenotazione` (
+  `ID_prenotazione` int(11) NOT NULL AUTO_INCREMENT,
   `Data` date NOT NULL,
   `contModifiche` int(11) NOT NULL,
   `username` varchar(20) NOT NULL,
   `posto` varchar(100) DEFAULT NULL,
-  `luogo` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `luogo` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`ID_prenotazione`),
+  KEY `username` (`username`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=69 ;
 
 --
 -- Dump dei dati per la tabella `prenotazione`
@@ -75,44 +63,8 @@ INSERT INTO `prenotazione` (`ID_prenotazione`, `Data`, `contModifiche`, `usernam
 (64, '2025-05-02', 0, 'UtCoor', 'A14', 'A1'),
 (65, '2025-05-02', 0, 'UtCoor', 'A1', 'A1'),
 (66, '2025-05-04', 0, 'coor', 'D5', 'PARCHEGGIO'),
-(67, '2025-05-06', 0, 'coor', 'A6', 'A1');
-
--- --------------------------------------------------------
-
---
--- Struttura della tabella `salariunioni`
---
-
-CREATE TABLE `salariunioni` (
-  `ID_salaRiunioni` int(11) NOT NULL,
-  `Info` text NOT NULL,
-  `Stato` varchar(50) NOT NULL,
-  `ID_prenotazione` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Struttura della tabella `scrivania a1`
---
-
-CREATE TABLE `scrivania a1` (
-  `Posto` int(11) NOT NULL,
-  `Stato` varchar(50) NOT NULL,
-  `ID_prenotazione` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Struttura della tabella `scrivania a2`
---
-
-CREATE TABLE `scrivania a2` (
-  `Posto` int(11) NOT NULL,
-  `Stato` varchar(50) NOT NULL,
-  `ID_prenotazione` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+(67, '2025-05-06', 0, 'coor', 'A6', 'A1'),
+(68, '2025-05-07', 0, 'soverina06', 'C14', 'A2');
 
 -- --------------------------------------------------------
 
@@ -120,7 +72,7 @@ CREATE TABLE `scrivania a2` (
 -- Struttura della tabella `utente`
 --
 
-CREATE TABLE `utente` (
+CREATE TABLE IF NOT EXISTS `utente` (
   `nome_utente` varchar(30) NOT NULL,
   `password_utente` varchar(255) DEFAULT NULL,
   `mail_utente` varchar(30) NOT NULL,
@@ -128,7 +80,9 @@ CREATE TABLE `utente` (
   `telefono_utente` int(10) NOT NULL,
   `ruolo_utente` varchar(30) NOT NULL,
   `username` varchar(20) NOT NULL,
-  `ID_coordinatore` varchar(30) DEFAULT NULL
+  `ID_coordinatore` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`username`),
+  KEY `coordinare_matricola_utente` (`ID_coordinatore`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -144,120 +98,14 @@ INSERT INTO `utente` (`nome_utente`, `password_utente`, `mail_utente`, `cognome_
 ('locatelli', '$2y$10$2uCvK0CJUi/SGVK2f6il7OnzvKNegKv7APY24x/4qwWyZ0nSTVMYS', 'sdffgdasg@dfgsdffg', 't', 1234567890, 'utente_base', 'utente3.0', 'coordinatore1');
 
 --
--- Indici per le tabelle scaricate
---
-
---
--- Indici per le tabelle `parcheggio`
---
-ALTER TABLE `parcheggio`
-  ADD PRIMARY KEY (`Posto`),
-  ADD KEY `ID_prenotazione` (`ID_prenotazione`);
-
---
--- Indici per le tabelle `prenotazione`
---
-ALTER TABLE `prenotazione`
-  ADD PRIMARY KEY (`ID_prenotazione`),
-  ADD KEY `username` (`username`);
-
---
--- Indici per le tabelle `salariunioni`
---
-ALTER TABLE `salariunioni`
-  ADD PRIMARY KEY (`ID_salaRiunioni`),
-  ADD KEY `ID_prenotazione` (`ID_prenotazione`);
-
---
--- Indici per le tabelle `scrivania a1`
---
-ALTER TABLE `scrivania a1`
-  ADD PRIMARY KEY (`Posto`),
-  ADD KEY `ID_prenotazione` (`ID_prenotazione`);
-
---
--- Indici per le tabelle `scrivania a2`
---
-ALTER TABLE `scrivania a2`
-  ADD PRIMARY KEY (`Posto`),
-  ADD KEY `ID_prenotazione` (`ID_prenotazione`);
-
---
--- Indici per le tabelle `utente`
---
-ALTER TABLE `utente`
-  ADD PRIMARY KEY (`username`),
-  ADD KEY `coordinare_matricola_utente` (`ID_coordinatore`);
-
---
--- AUTO_INCREMENT per le tabelle scaricate
---
-
---
--- AUTO_INCREMENT per la tabella `parcheggio`
---
-ALTER TABLE `parcheggio`
-  MODIFY `Posto` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT per la tabella `prenotazione`
---
-ALTER TABLE `prenotazione`
-  MODIFY `ID_prenotazione` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
---
--- AUTO_INCREMENT per la tabella `salariunioni`
---
-ALTER TABLE `salariunioni`
-  MODIFY `ID_salaRiunioni` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT per la tabella `scrivania a1`
---
-ALTER TABLE `scrivania a1`
-  MODIFY `Posto` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT per la tabella `scrivania a2`
---
-ALTER TABLE `scrivania a2`
-  MODIFY `Posto` int(11) NOT NULL AUTO_INCREMENT;
---
 -- Limiti per le tabelle scaricate
 --
-
---
--- Limiti per la tabella `parcheggio`
---
-ALTER TABLE `parcheggio`
-  ADD CONSTRAINT `parcheggio_ibfk_1` FOREIGN KEY (`ID_prenotazione`) REFERENCES `prenotazione` (`ID_prenotazione`);
 
 --
 -- Limiti per la tabella `prenotazione`
 --
 ALTER TABLE `prenotazione`
   ADD CONSTRAINT `prenotazione_ibfk_1` FOREIGN KEY (`username`) REFERENCES `utente` (`username`);
-
---
--- Limiti per la tabella `salariunioni`
---
-ALTER TABLE `salariunioni`
-  ADD CONSTRAINT `salariunioni_ibfk_1` FOREIGN KEY (`ID_prenotazione`) REFERENCES `prenotazione` (`ID_prenotazione`);
-
---
--- Limiti per la tabella `scrivania a1`
---
-ALTER TABLE `scrivania a1`
-  ADD CONSTRAINT `scrivania a1_ibfk_1` FOREIGN KEY (`ID_prenotazione`) REFERENCES `prenotazione` (`ID_prenotazione`);
-
---
--- Limiti per la tabella `scrivania a2`
---
-ALTER TABLE `scrivania a2`
-  ADD CONSTRAINT `scrivania a2_ibfk_1` FOREIGN KEY (`ID_prenotazione`) REFERENCES `prenotazione` (`ID_prenotazione`);
-
---
--- Limiti per la tabella `utente`
---
-ALTER TABLE `utente`
-  ADD CONSTRAINT `utente_ibfk_1` FOREIGN KEY (`ID_coordinatore`) REFERENCES `utente` (`username`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
