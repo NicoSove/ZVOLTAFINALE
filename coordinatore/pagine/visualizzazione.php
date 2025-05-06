@@ -52,7 +52,11 @@ foreach ($luoghi as $luogo) {
     if (!$stmt) die("Errore prepare prenotazioni: " . $conn->error);
     $types = str_repeat('s', count($usernames) + 2);
     $params = array_merge([$luogo, $dataPrenotazione], $usernames);
-    $stmt->bind_param($types, ...$params);
+    $tmp = [];
+    foreach ($params as $key => $value) {
+        $tmp[$key] = &$params[$key];
+    }
+    call_user_func_array([$stmt, 'bind_param'], array_merge([$types], $tmp));
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
@@ -164,6 +168,8 @@ foreach ($prenotazioni as $p) {
             </nav>
         </div>
     </header>
+    <div style = " background-color:rgb(198, 228, 252); width: fit-content; padding: 20px; border-radius: 20px; justify-self: center">
+
 <h1>Prenotazioni del <?php echo htmlspecialchars($dataPrenotazione); ?></h1>
 <form method="post">
     <label for="data">Seleziona una data:</label>
@@ -212,5 +218,7 @@ foreach ($prenotazioni as $p) {
 <?php else: ?>
 <p>Nessuna prenotazione trovata per gli altri utenti.</p>
 <?php endif; ?>
+</div>
 </body>
 </html>
+
