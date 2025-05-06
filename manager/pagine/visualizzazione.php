@@ -224,7 +224,7 @@ if ($ruolo === 'admin') {
     </div>
 </header>
 
-<div style = "  background-color:rgb(198, 228, 252); width: fit-content; padding: 20px; border-radius: 20px; justify-self: center">
+<div style = " width: fit-content; padding: 20px; border-radius: 20px; justify-self: center">
 <h1>Prenotazioni del <?php echo htmlspecialchars($dataPrenotazione); ?></h1>
 <form method="post">
     <label for="data">Seleziona una data:</label>
