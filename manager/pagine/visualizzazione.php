@@ -58,7 +58,11 @@ if ($ruolo === 'admin') {
         $stmt = $conn->prepare($query);
         $types = str_repeat('s', count($usernames) + 1);
         $params = array_merge([$dataPrenotazione], $usernames);
-        $stmt->bind_param($types, ...$params);
+        $tmp = [];
+        foreach ($params as $key => $value) {
+            $tmp[$key] = &$params[$key];
+        }
+        call_user_func_array([$stmt, 'bind_param'], array_merge([$types], $tmp));
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
@@ -90,7 +94,11 @@ if ($ruolo === 'admin') {
         $stmt = $conn->prepare($query);
         $types = str_repeat('s', count($usernames) + 2);
         $params = array_merge([$luogo, $dataPrenotazione], $usernames);
-        $stmt->bind_param($types, ...$params);
+        $tmp = [];
+        foreach ($params as $key => $value) {
+            $tmp[$key] = &$params[$key];
+        }
+        call_user_func_array([$stmt, 'bind_param'], array_merge([$types], $tmp));
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
@@ -192,6 +200,7 @@ if ($ruolo === 'admin') {
         form.inline {
             display: inline;
         }
+
     </style>
 </head>
 <body>
@@ -214,6 +223,8 @@ if ($ruolo === 'admin') {
         </nav>
     </div>
 </header>
+
+<div style = "  background-color:rgb(198, 228, 252); width: fit-content; padding: 20px; border-radius: 20px; justify-self: center">
 <h1>Prenotazioni del <?php echo htmlspecialchars($dataPrenotazione); ?></h1>
 <form method="post">
     <label for="data">Seleziona una data:</label>
@@ -255,7 +266,7 @@ if ($ruolo === 'admin') {
 <?php if (count($prenotazioniCoordinatori) > 0): ?>
 <ul>
     <?php foreach ($prenotazioniCoordinatori as $p): ?>
-        <li>
+        <li style = "color: black">
             <strong><?php echo htmlspecialchars($p['username']); ?></strong> - 
             Posto: <?php echo htmlspecialchars($p['posto']); ?> - 
             Luogo: <?php echo htmlspecialchars($p['luogo']); ?>
@@ -354,5 +365,6 @@ if ($ruolo === 'admin') {
 <p>Nessuna prenotazione trovata per gli altri utenti.</p>
 <?php endif; ?>
 <?php endif; ?>
+</div>
 </body>
 </html>
