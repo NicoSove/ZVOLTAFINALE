@@ -61,29 +61,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['posto'])) {
         // Il posto è già prenotato per il luogo specificato e per la data +1
         echo "<script>alert('Il posto $posto nel luogo $luogo è già prenotato per il giorno successivo. Scegli un altro posto.');</script>";
     } else {
-        $rowCount = $resultCount->fetch_assoc();
-        // Permetti fino a 3 prenotazioni per il 'coordinatore'
-        if ($rowCount['count'] >= 3) {
-            echo "<script>alert('Come coordinatore, puoi prenotare solo fino a 3 posti contemporaneamente.');</script>";
+        // Nuova logica per controllare il numero totale di prenotazioni dell'utente per il giorno successivo
+        $stmtCountUserBookings = $conn->prepare("SELECT COUNT(*) as totalBookings FROM prenotazione WHERE username = ? AND Data = ?");
+        $stmtCountUserBookings->bind_param("ss", $username, $nextDay);
+        $stmtCountUserBookings->execute();
+        $resultCountUserBookings = $stmtCountUserBookings->get_result();
+        $rowCountUserBookings = $resultCountUserBookings->fetch_assoc();
+        $stmtCountUserBookings->close();
+
+        if ($rowCountUserBookings['totalBookings'] >= 1) {
+            echo "<script>alert('Come utente base, puoi prenotare solo un asset per il giorno successivo.');</script>";
         } else {
-        // Inserisce la nuova prenotazione basata sull'ultimo click
-        $stmt = $conn->prepare("INSERT INTO prenotazione (Data, username, posto, contModifiche, luogo) VALUES (?, ?, ?, 0, ?)");
-        $stmt->bind_param("ssss", $nextDay, $username, $posto, $luogo); // Aggiungi $luogo come parametro
-        
-        if ($stmt->execute()) {
-            $prenotazioneSuccess = true;
-            $_SESSION["prenOK"] = true;
-            echo "<script>
-                    document.getElementById('successMessage').style.display = 'block';
-                    alert('Prenotazione effettuata con successo!');
-                  </script>";
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
-        } else {
-            echo "<script>alert('Errore nella prenotazione: " . addslashes($conn->error) . "');</script>";
+            // Inserisce la nuova prenotazione basata sull'ultimo click
+            $stmt = $conn->prepare("INSERT INTO prenotazione (Data, username, posto, contModifiche, luogo) VALUES (?, ?, ?, 0, ?)");
+            $stmt->bind_param("ssss", $nextDay, $username, $posto, $luogo); // Aggiungi $luogo come parametro
+            
+            if ($stmt->execute()) {
+                $prenotazioneSuccess = true;
+                $_SESSION["prenOK"] = true;
+                echo "<script>
+                        document.getElementById('successMessage').style.display = 'block';
+                        alert('Prenotazione effettuata con successo!');
+                      </script>";
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
+            } else {
+                echo "<script>alert('Errore nella prenotazione: " . addslashes($conn->error) . "');</script>";
+            }
         }
     }
-}
     $stmt->close();
 }
 
